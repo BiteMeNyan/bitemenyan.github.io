@@ -3,7 +3,7 @@
 		<title>My first three.js app</title>
 		<script type="module" src="three.js"></script>
 		<script src="dat.gui.min.js"></script>
-		<script type="module" src="OrbitControls.js"></script>
+		<!--<script type="module" src="OrbitControls.js"></script>-->
 		<script type="module"src="AnaglyphEffect.js"></script>
 		<script type="module" src="FresnelShader.js"></script>
 		<script type="module" src="Quaternion.js"></script>
@@ -98,9 +98,9 @@
 
 
 				
-			const controls = new OrbitControls( camera, renderer.domElement );
+			//const controls = new OrbitControls( camera, renderer.domElement );
 			camera.position.set( 0, 2, 1 );
-			controls.update();
+			//controls.update();
 
 
 	// LIGHT
@@ -145,7 +145,7 @@
 			var animate = function () {
 				requestAnimationFrame( animate );
 
-				controls.update();
+				//controls.update();
 
 				camera.applyQuaternion(qm);
 				camera.quaternion.normalize();
