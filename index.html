@@ -31,10 +31,20 @@
 
 
          	var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			//var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.Camera();
+			scene.add(camera);
 
-			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			var renderer = new THREE.WebGLRenderer({
+			antialias : true,
+			alpha: true
+			});
+			renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+			renderer.setSize( 640, 480 );
+			renderer.domElement.style.position = 'absolute'
+			renderer.domElement.style.top = '0px'
+			renderer.domElement.style.left = '0px'
+			document.body.appendChild( renderer.domElement );
 			document.body.appendChild( renderer.domElement );
 
 			var a = 0.5;
@@ -53,7 +63,7 @@
 			var geometry = new THREE.ParametricGeometry( parametricDrop, 25, 25 );
 			var material = new THREE.MeshNormalMaterial( { wireframe: true} );
 			var mesh = new THREE.Mesh( geometry, material ) ;
-			scene.add( mesh );
+			//scene.add( mesh );
 			camera.position.z = 5;
 
 			var arToolkitSource = new THREEx.ArToolkitSource({
@@ -96,11 +106,11 @@
 			let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
 				type: 'pattern', patternUrl: "hiro.patt",
 			})
-
 	
 	
 			markerRoot1.add( mesh );
-			
+
+
 			function update()
 			{
 				// update artoolkit on every frame
@@ -114,7 +124,6 @@
 
 				mesh.rotation.x += 0.01;
 				mesh.rotation.y += 0.01;
-				
 				update();
 				renderer.render( scene, camera );
 			};
