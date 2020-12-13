@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>Hello, AR DROP!!!!</title>
+	<title>Hello, AR DROP!!!!!</title>
 	<!-- include three.js library -->
 	<script src='three.js'></script>
 	<!-- include jsartookit -->
@@ -128,11 +128,7 @@ function initialize()
 	
 	
 	let geometry1	= new THREE.ParametricGeometry( parametricDrop, 25, 25 );
-	let material1	= new THREE.MeshNormalMaterial({
-		transparent: true,
-		opacity: 0.5,
-		side: THREE.DoubleSide
-	}); 
+	let material1	= new THREE.MeshNormalMaterial( { wireframe: true} );
 	
 	mesh1 = new THREE.Mesh( geometry1, material1 );
 	mesh1.position.y = 0.5;
@@ -160,6 +156,8 @@ function animate()
 	requestAnimationFrame(animate);
 	deltaTime = clock.getDelta();
 	totalTime += deltaTime;
+	mesh1.rotation.x += 0.01;
+	mesh1.rotation.y += 0.01;
 	update();
 	render();
 }
