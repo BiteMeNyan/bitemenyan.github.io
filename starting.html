@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+		<!-- AFRAME Library -->   
+		<script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+
+		<!-- include jsartookit -->
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/vendor/jsartoolkit5/js/artoolkit.api.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/vendor/jsartoolkit5/build/artoolkit.min.js"></script>
+		<!-- include threex.artoolkit -->
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/src/threex/threex-artoolkitsource.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/src/threex/threex-artoolkitcontext.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/src/threex/threex-arbasecontrols.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/src/threex/threex-armarkercontrols.js"></script>
+		  <!-- Viewport -->
+		  <meta name="viewport" content="width=device-width,height=device-height">
+		  <!-- IOS SUPPORT -->
+		  <meta name="apple-mobile-web-app-capable" content="yes">
+	</head>
+	<body>
+		<script src="three.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+		<script type="module">
+
+
+         	var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			var a = 0.5;
+			var b = 1;
+
+			var parametricDrop = function(u, v, vector) {
+
+				let v0 = v * Math.PI * 2;
+				let u0 = u * Math.PI;
+
+			vector.x = a * (b - Math.cos(u0)) * Math.sin(u0) * Math.cos(v0);
+			vector.y = a * (b - Math.cos(u0)) * Math.sin(u0) * Math.sin(v0);
+			vector.z = Math.cos(u0);
+			};
+			
+			var geometry = new THREE.ParametricGeometry( parametricDrop, 25, 25 );
+			var material = new THREE.MeshNormalMaterial( { wireframe: true} );
+			var mesh = new THREE.Mesh( geometry, material ) ;
+			scene.add( mesh );
+			camera.position.z = 5;
+
+			var arToolkitSource = new THREEx.ArToolkitSource({
+			sourceType : 'webcam',
+			});
+
+			function onResize()
+			{
+				arToolkitSource.onResize()	
+				arToolkitSource.copySizeTo(renderer.domElement)	
+				if ( arToolkitContext.arController !== null )
+				{
+					arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+				}	
+			}
+
+			arToolkitSource.init(function onReady(){
+				onResize()
+			});
+			
+			// handle resize event
+			window.addEventListener('resize', function(){
+				onResize()
+			});
+	
+
+			var arToolkitContext = new THREEx.ArToolkitContext({
+				cameraParametersUrl: 'camera_para.dat',
+				detectionMode: 'mono'
+			});
+			
+			// copy projection matrix to camera when initialization complete
+			arToolkitContext.init( function onCompleted(){
+				camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+			});
+
+			// build markerControls
+			var markerRoot1 = new THREE.Group();
+			scene.add(markerRoot1);
+			let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+				type: 'pattern', patternUrl: "hiro.patt",
+			})
+
+	
+	
+			markerRoot1.add( mesh );
+
+
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+				mesh.rotation.x += 0.01;
+				mesh.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+
+
+
+		</script>
+	</body>
+</html>
