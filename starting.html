@@ -100,6 +100,13 @@
 	
 	
 			markerRoot1.add( mesh );
+			
+			function update()
+			{
+				// update artoolkit on every frame
+				if ( arToolkitSource.ready !== false )
+					arToolkitContext.update( arToolkitSource.domElement );
+			}
 
 
 			var animate = function () {
@@ -107,7 +114,8 @@
 
 				mesh.rotation.x += 0.01;
 				mesh.rotation.y += 0.01;
-
+				
+				update();
 				renderer.render( scene, camera );
 			};
 
