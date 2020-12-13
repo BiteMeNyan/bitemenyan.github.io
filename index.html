@@ -30,105 +30,131 @@
 		<script type="module">
 
 
-         	var scene = new THREE.Scene();
-			//var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			var camera = new THREE.Camera();
-			scene.add(camera);
+         	var scene, camera, renderer, clock, deltaTime, totalTime;
 
-			var renderer = new THREE.WebGLRenderer({
-			antialias : true,
-			alpha: true
-			});
-			renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-			renderer.setSize( 640, 480 );
-			renderer.domElement.style.position = 'absolute'
-			renderer.domElement.style.top = '0px'
-			renderer.domElement.style.left = '0px'
-			document.body.appendChild( renderer.domElement );
-			document.body.appendChild( renderer.domElement );
+var arToolkitSource, arToolkitContext;
 
-			var a = 0.5;
-			var b = 1;
+var markerRoot1, markerRoot2;
 
-			var parametricDrop = function(u, v, vector) {
+var mesh1;
 
-				let v0 = v * Math.PI * 2;
-				let u0 = u * Math.PI;
+initialize();
+animate();
 
-			vector.x = a * (b - Math.cos(u0)) * Math.sin(u0) * Math.cos(v0);
-			vector.y = a * (b - Math.cos(u0)) * Math.sin(u0) * Math.sin(v0);
-			vector.z = Math.cos(u0);
-			};
-			
-			var geometry = new THREE.ParametricGeometry( parametricDrop, 25, 25 );
-			var material = new THREE.MeshNormalMaterial( { wireframe: true} );
-			var mesh = new THREE.Mesh( geometry, material ) ;
-			//scene.add( mesh );
-			camera.position.z = 5;
+function initialize()
+{
+	scene = new THREE.Scene();
 
-			var arToolkitSource = new THREEx.ArToolkitSource({
-			sourceType : 'webcam',
-			});
+	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
+	scene.add( ambientLight );
+				
+	camera = new THREE.Camera();
+	scene.add(camera);
 
-			function onResize()
-			{
-				arToolkitSource.onResize()	
-				arToolkitSource.copySizeTo(renderer.domElement)	
-				if ( arToolkitContext.arController !== null )
-				{
-					arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
-				}	
-			}
+	renderer = new THREE.WebGLRenderer({
+		antialias : true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	renderer.setSize( 640, 480 );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
 
-			arToolkitSource.init(function onReady(){
-				onResize()
-			});
-			
-			// handle resize event
-			window.addEventListener('resize', function(){
-				onResize()
-			});
+	clock = new THREE.Clock();
+	deltaTime = 0;
+	totalTime = 0;
 	
+	////////////////////////////////////////////////////////////
+	// setup arToolkitSource
+	////////////////////////////////////////////////////////////
 
-			var arToolkitContext = new THREEx.ArToolkitContext({
-				cameraParametersUrl: 'camera_para.dat',
-				detectionMode: 'mono'
-			});
-			
-			// copy projection matrix to camera when initialization complete
-			arToolkitContext.init( function onCompleted(){
-				camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
-			});
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType : 'webcam',
+	});
 
-			// build markerControls
-			var markerRoot1 = new THREE.Group();
-			scene.add(markerRoot1);
-			let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-				type: 'pattern', patternUrl: "hiro.patt",
-			})
+	function onResize()
+	{
+		arToolkitSource.onResize()	
+		arToolkitSource.copySizeTo(renderer.domElement)	
+		if ( arToolkitContext.arController !== null )
+		{
+			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+		}	
+	}
+
+	arToolkitSource.init(function onReady(){
+		onResize()
+	});
 	
+	// handle resize event
+	window.addEventListener('resize', function(){
+		onResize()
+	});
 	
-			markerRoot1.add( mesh );
+	////////////////////////////////////////////////////////////
+	// setup arToolkitContext
+	////////////////////////////////////////////////////////////	
+
+	// create atToolkitContext
+	arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: 'data/camera_para.dat',
+		detectionMode: 'mono'
+	});
+	
+	// copy projection matrix to camera when initialization complete
+	arToolkitContext.init( function onCompleted(){
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+	});
+
+	////////////////////////////////////////////////////////////
+	// setup markerRoots
+	////////////////////////////////////////////////////////////
+
+	// build markerControls
+	markerRoot1 = new THREE.Group();
+	scene.add(markerRoot1);
+	let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+		type: 'pattern', patternUrl: "data/hiro.patt",
+	})
+
+	let geometry1	= new THREE.CubeGeometry(1,1,1);
+	let material1	= new THREE.MeshNormalMaterial({
+		transparent: true,
+		opacity: 0.5,
+		side: THREE.DoubleSide
+	}); 
+	
+	mesh1 = new THREE.Mesh( geometry1, material1 );
+	mesh1.position.y = 0.5;
+	
+	markerRoot1.add( mesh1 );
+}
 
 
-			function update()
-			{
-				// update artoolkit on every frame
-				if ( arToolkitSource.ready !== false )
-					arToolkitContext.update( arToolkitSource.domElement );
-			}
+function update()
+{
+	// update artoolkit on every frame
+	if ( arToolkitSource.ready !== false )
+		arToolkitContext.update( arToolkitSource.domElement );
+}
 
 
-			var animate = function () {
-				requestAnimationFrame( animate );
+function render()
+{
+	renderer.render( scene, camera );
+}
 
-				mesh.rotation.x += 0.01;
-				mesh.rotation.y += 0.01;
-				update();
-				renderer.render( scene, camera );
-			};
 
-			animate();
+function animate()
+{
+	requestAnimationFrame(animate);
+	deltaTime = clock.getDelta();
+	totalTime += deltaTime;
+	update();
+	render();
+}
 
 
 
