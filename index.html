@@ -16,10 +16,6 @@
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
 
-<!-- 
-  Example created by Lee Stemkoski: https://github.com/stemkoski
-  Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
--->
 
 <script>
 var scene, camera, renderer, clock, deltaTime, totalTime;
@@ -128,7 +124,7 @@ function initialize()
 	
 	
 	let geometry1	= new THREE.ParametricGeometry( parametricDrop, 25, 25 );
-	let material1	= new THREE.MeshNormalMaterial( { opacity: 0.8} );
+	let material1	= new THREE.MeshNormalMaterial( { wireframe: true} );
 	
 	mesh1 = new THREE.Mesh( geometry1, material1 );
 	mesh1.position.y = 0.5;
@@ -157,7 +153,7 @@ function animate()
 	deltaTime = clock.getDelta();
 	totalTime += deltaTime;
 	mesh1.rotation.x += 0.01;
-	mesh1.rotation.y += 0.001;
+	mesh1.rotation.y += 0.01;
 	//mesh1.rotation.z += 0.001;
 	update();
 	render();
