@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>ArgReality</title>
+	<title>ArgReality4</title>
 	<style>
         body {
             margin: 0;
@@ -134,6 +134,7 @@ function initialize()
         // Generate points for whole figure in function range from 0 to 1
         for (const param of [0, 1]) {
             var parametricGeometry = new THREE.ParametricGeometry(generateGeometryForCloverKnotPoint(param), numberOfSlicesAndStacks, numberOfSlicesAndStacks);
+		parametricGeometry.scale(0.4, 0.4, 0.4);
 
             var wireframeGeometry = new THREE.WireframeGeometry(parametricGeometry);
 
